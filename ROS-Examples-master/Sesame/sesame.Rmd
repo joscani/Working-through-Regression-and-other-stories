@@ -24,9 +24,10 @@ knitr::opts_chunk$set(message=FALSE, error=FALSE, warning=FALSE, comment=NA)
 
 ```{r }
 library("rprojroot")
-root<-has_file(".ROS-Examples-root")$make_fix_file()
+#root<-has_file(".ROS-Examples-root")$make_fix_file()
 library("rstanarm")
 library("brms")
+library("cmdstanr")
 ```
 
 Set random seed for reproducability
@@ -38,7 +39,7 @@ SEED <- 1234
 #### Load data
 
 ```{r }
-sesame <- read.csv(root("Sesame/data","sesame.csv"))
+sesame <- read.csv(here::here("ROS-Examples-master/Sesame/data/sesame.csv"))
 head(sesame)
 ```
 
@@ -154,9 +155,13 @@ print(se_adj, digits=2)
 f1 <- bf(watched ~ encour)
 f2 <- bf(postlet ~ watched)
 ```
+
 ```{r results='hide'}
-IV_brm_a <- brm(f1 + f2, data=sesame, seed=SEED)
+
+IV_brm_a <- brm(f1 + f2, data=sesame, seed=SEED, backend = "cmdstanr", cores = 4)
+
 ```
+
 ```{r }
 print(IV_brm_a, digits=1)
 ```
@@ -168,7 +173,9 @@ f1 <- bf(watched ~ encour + prelet + setting + factor(site))
 f2 <- bf(postlet ~ watched + prelet + setting + factor(site))
 ```
 ```{r results='hide'}
-IV_brm_b <- brm(f1 + f2, data=sesame, seed=SEED)
+
+
+IV_brm_b <- brm(f1 + f2, data=sesame, seed=SEED,  backend = "cmdstanr", cores = 4)
 ```
 ```{r }
 print(IV_brm_b, digits=1)
